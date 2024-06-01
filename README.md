@@ -21,13 +21,13 @@ It won't ever profit off your trademarks. Without this project, this version of 
 
 1. Download this repo to your computer
 2. Install our list of [dependencies](#environment-dependencies)
-3. Create a `.env` file by copying the file `.env.example` to be called `.env`
-4. Open the folder you downloaded in a command prompt
-5. Run `npm i`, this installs necessary packages
-6. Run `npm run build`, this creates the client and server cache the first time
-7. Run `npm start`
+3. Open the folder you downloaded in a command prompt
+4. Run `npm install`
+5. Run `npm start`
 
 Now open [http://localhost](http://localhost) in your browser and play!
+
+Advanced users: You can customize your setup by copying the `.env.example` file to `.env`. This is not necessary for a simple localhost setup.
 
 ### Using the setup script
 
@@ -55,15 +55,13 @@ Another option for building your Dev Container is to instead clone your reposito
 
 ## Environment Dependencies
 
-- [NodeJS 20+](https://nodejs.org/) (current LTS) or [18](https://nodejs.org/download/release/v18.18.2/) (last LTS)
+- [NodeJS 20](https://nodejs.org/) (current LTS)
 - [Java 17+](https://adoptium.net/)
 - If you're using VS Code (recommended), [we have an extension to install here.](https://marketplace.visualstudio.com/items?itemName=2004scape.runescriptlanguage)
 
-Java is required for RuneScriptCompiler.jar, our content language compiler.
+Java is required for our RuneScript compiler.
 
-You can download RuneScriptCompiler from the [#dev-resources](https://discord.com/channels/953326730632904844/1125601647574396978) Discord channel. Place the jar file in the root directory of the project.  
-
-RuneScriptCompiler is not yet open-source, sorry for any inconvenience.
+RuneScriptCompiler.jar is not yet open-source, sorry for any inconvenience.
 
 ## Development Workflow
 

@@ -268,6 +268,7 @@ attack=14
 strength=13
 defence=12
 wanderrange=7
+param=retreat,8
 huntmode=cowardly
 
 [guard_sword]
@@ -582,52 +583,6 @@ param=attack_sound,staff_stab
 param=defend_sound,female_hit
 param=death_sound,female_death
 category=barbarian
-
-[alkharid_warrior]
-name=Al-Kharid warrior
-desc=Part of Al-Kharid's elite fighting force.
-walkanim=human_walk_f,human_walk_b,human_walk_l,human_walk_r
-readyanim=human_ready
-op3=Pickpocket
-op2=Attack
-vislevel=9
-recol1s=2340
-recol1d=4226
-recol2s=14724
-recol2d=13325
-recol3s=24075
-recol3d=18790
-recol4s=6273
-recol4d=4226
-recol5s=14801
-recol5d=18790
-model1=model_215_idk
-model2=model_490_obj_wear
-model3=model_251_idk
-model4=model_292_idk
-model5=model_151_idk
-model6=model_176_idk
-model7=model_254_idk
-model8=model_181_idk
-model9=model_541_obj_wear
-model10=model_191_npc
-respawnrate=25
-hitpoints=19
-attack=7
-strength=5
-defence=4
-param=attackbonus,10
-param=strengthbonus,10
-param=stabdefence,12
-param=slashdefence,15
-param=crushdefence,10
-param=magicdefence,-1
-param=rangedefence,12
-param=damagetype,^slash_style
-param=attack_anim,human_sword_slash
-param=defend_anim,human_sword_defend2
-param=attack_sound,hacksword_slash
-// param=defend_sound,brassclash2
 
 [white_knight]
 name=White Knight
@@ -1334,6 +1289,7 @@ param=death_anim,chicken_death
 param=attack_sound,chicken_attack
 param=defend_sound,chicken_hit
 param=death_sound,chicken_death
+param=retreat,1
 category=chicken
 
 [sheep_sheared]
@@ -2578,6 +2534,7 @@ param=defend_anim,unicorn_block
 param=death_anim,unicorn_death
 param=attack_sound,horse_hit
 param=defend_sound,horse_hit
+param=retreat,6
 category=unicorn
 
 [npc_90]
@@ -4069,6 +4026,7 @@ param=death_anim,souless_death
 // TODO param=attack_sound,
 // TODO param=defend_sound,
 // TODO param=death_sound,
+param=retreat,9
 huntmode=cowardly
 
 [npc_141]
@@ -4765,7 +4723,8 @@ model10=model_519_obj_wear
 head1=model_53_idk_head
 head2=model_76_obj_wear
 wanderrange=12
-attackrange=14
+maxrange=12
+attackrange=3
 hitpoints=13
 attack=2
 strength=2
@@ -5644,6 +5603,7 @@ attack=2
 strength=2
 defence=3
 param=damagetype,^crush_style
+param=retreat,7
 
 [npc_224]
 resizeh=64
@@ -6549,6 +6509,7 @@ param=rangedefence,9
 param=attack_anim,human_sword_stab
 param=defend_anim,human_sword_defend2
 param=attack_sound,stabsword_stab
+param=retreat,8
 huntmode=cowardly
 
 [head_thief]
@@ -8776,6 +8737,7 @@ param=attack_sound,imp_attack
 param=defend_sound,imp_hit
 param=death_sound,imp_death
 param=death_drop,ashes
+param=retreat,4
 // https://oldschool.runescape.wiki/w/Demon_(attribute)
 
 [npc_726]
