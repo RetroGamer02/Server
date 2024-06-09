@@ -37,6 +37,11 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         }
 
         //Added by Retro
+        if (cmd === 'discord') {
+            player.messageGame('https://discord.gg/Y6c8dMq8');
+            return false;
+        }
+
         if (player.staffModLevel < 1) {
             player.playerLog('Cheat cmd attempted', cheat);
             player.messageGame('Cheat Commands are Disabled.');
