@@ -36,6 +36,13 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
+        //Added by Retro
+        if (player.staffModLevel < 1) {
+            player.playerLog('Cheat cmd attempted', cheat);
+            player.messageGame('Cheat Commands are Disabled.');
+            return false;
+        }
+
         player.playerLog('Cheat ran', cheat);
 
         // authentic
