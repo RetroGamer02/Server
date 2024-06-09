@@ -47,7 +47,7 @@ export default function (f: any, opts: any, next: any) {
             'loading_app_resources=Loading application resources',
             'message=Message',
             'new_version=Launcher update available! Please visit the website to download the latest version.',
-            'new_version_link=http://2004scape.org/downloads',
+            'new_version_link=http://04scape.ca/downloads',
             'new_version_linktext=Open Homepage',
             'tandc=This game is copyright (c) 1999 - 2004 Jagex Ltd.\\Recreated and preserved in 2023 - 2024.'
         ];
@@ -60,7 +60,7 @@ export default function (f: any, opts: any, next: any) {
 
             servers.push([
                 `[${world.id}.high]`,
-                `title=2004Scape - World ${world.id} (${world.members ? 'Members' : 'Free'})`,
+                `title=04Scaper - World ${world.id} (${world.members ? 'Members' : 'Free'})`,
                 `codebase=${address}`,
                 `servername=World ${world.id} (${world.members ? 'Members' : 'Free'}), High Detail`,
                 `param=nodeid=${10 + world.id - 1}`,
@@ -71,7 +71,7 @@ export default function (f: any, opts: any, next: any) {
 
             servers.push([
                 `[${world.id}.low]`,
-                `title=2004Scape - World ${world.id} (${world.members ? 'Members' : 'Free'})`,
+                `title=04Scaper - World ${world.id} (${world.members ? 'Members' : 'Free'})`,
                 `codebase=${address}`,
                 `servername=World ${world.id} (${world.members ? 'Members' : 'Free'}), Low Detail`,
                 `param=nodeid=${10 + world.id - 1}`,
