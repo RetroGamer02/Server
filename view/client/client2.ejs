@@ -33,12 +33,13 @@
     }
   </style>
 
-  <script defer="defer" src="/js/runetek.js"></script>
-  <script defer="defer" src="/js/client.js"></script>
+  <!--<script defer="defer" src="/js/runetek.js"></script>
+  <script defer="defer" src="/js/client.js"></script>-->
 </head>
 
 <body>
-  <canvas id="canvas" width="789" height="532"></canvas>
+  <!--<canvas id="canvas" width="789" height="532"></canvas>-->
+  <iframe src='<%= world.address.replace('https', 'http') %>/client2.html?method=<%= method %>&world=<%= world.id %>&detail=<%= detail %>' frameborder="0" border="0" width="789" height="532" scrolling="no"></iframe>
 </body>
 
 </html>
