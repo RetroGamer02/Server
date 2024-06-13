@@ -1,5 +1,5 @@
 viewerversion=100
-serverlist=http://www.04scaper.ca/serverlist.ws
+serverlist=http://04scaper.ca/serverlist.ws
 loader_jar=loader.jar
 window_preferredwidth=774
 window_preferredheight=552
