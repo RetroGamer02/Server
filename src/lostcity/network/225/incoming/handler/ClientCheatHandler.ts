@@ -42,7 +42,13 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
         if (player.staffModLevel > 0 && cmd === 'kick') {
             if (World.getPlayerByUsername(args[0])) {
-                World.removePlayer((World.getPlayerByUsername(args[0])) as Player);
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    World.removePlayer(selplayer);
+                }
             }
             player.messageGame('Player: \'' + args[0] + '\' has been kicked.');
             return false;
@@ -51,7 +57,13 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         if (player.staffModLevel > 0 && cmd === 'ban') {
             fs.appendFileSync('data/banlist.txt', args[0] + '\n');
             if (World.getPlayerByUsername(args[0])) {
-                World.removePlayer((World.getPlayerByUsername(args[0])) as Player);
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    World.removePlayer(selplayer);
+                }
             }
             player.messageGame('Player: \'' + args[0] + '\' has been banned.');
             return false;
