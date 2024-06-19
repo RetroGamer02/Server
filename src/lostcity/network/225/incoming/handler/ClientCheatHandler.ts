@@ -57,6 +57,22 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
+        if (player.staffModLevel > 0 && cmd === 'banstatus') {
+            const banlist = fs.readFileSync('data/banlist.txt', 'ascii').replace(/\r/g, '').split('\n');
+
+            for (let i=0; i < banlist.length; i++) {
+                const line = banlist[i];
+                if (line.startsWith(args[0])) {
+                    player.messageGame('Player found in ban list.');
+                    return false;
+                } else {
+                    player.messageGame('Player not found in ban list.');
+                    continue;
+                }
+            }
+            return false;
+        }
+
         if (player.staffModLevel < 1) {
             player.playerLog('Cheat cmd attempted', cheat);
             player.messageGame('Cheat Commands are Disabled.');
