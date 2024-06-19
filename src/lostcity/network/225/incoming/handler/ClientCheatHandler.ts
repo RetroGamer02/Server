@@ -42,7 +42,9 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
         if (player.staffModLevel > 0 && cmd === 'ban') {
             fs.appendFileSync('data/banlist.txt', args[0] + '\n');
-            World.removePlayer((World.getPlayerByUsername(args[0])) as Player);
+            if (World.getPlayerByUsername(args[0])) {
+                World.removePlayer((World.getPlayerByUsername(args[0])) as Player);
+            }
             player.messageGame('Player: \'' + args[0] + '\' has been banned.');
             return false;
         }
