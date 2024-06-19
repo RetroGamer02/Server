@@ -24,6 +24,8 @@ import ScriptRunner from '#lostcity/engine/script/ScriptRunner.js';
 import PlayerStat from '#lostcity/entity/PlayerStat.js';
 import MoveStrategy from '#lostcity/entity/MoveStrategy.js';
 
+import fs from 'fs';
+
 export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
     handle(message: ClientCheat, player: Player): boolean {
         if (message.input.length > 80) {
@@ -38,9 +40,9 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
-        //Added by Retro
-        if (cmd === 'discord') {
-            player.messageGame('https://discord.gg/Y6c8dMq8');
+        if (player.staffModLevel > 0 && cmd === 'ban') {
+            fs.appendFileSync('data/banlist.txt', args[0] + '\n');
+            //World.players.remove(); //Todo
             return false;
         }
 
