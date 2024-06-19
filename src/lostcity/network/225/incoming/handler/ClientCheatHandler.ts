@@ -40,6 +40,14 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
+        if (player.staffModLevel > 0 && cmd === 'kick') {
+            if (World.getPlayerByUsername(args[0])) {
+                World.removePlayer((World.getPlayerByUsername(args[0])) as Player);
+            }
+            player.messageGame('Player: \'' + args[0] + '\' has been kicked.');
+            return false;
+        }
+
         if (player.staffModLevel > 0 && cmd === 'ban') {
             fs.appendFileSync('data/banlist.txt', args[0] + '\n');
             if (World.getPlayerByUsername(args[0])) {
