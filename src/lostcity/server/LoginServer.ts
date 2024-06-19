@@ -91,6 +91,8 @@ export class LoginServer {
                             await this.write(socket, reply.data);
                             data.release();
                             return;
+                        } else {
+                            continue;
                         }
                     }
 
