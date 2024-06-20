@@ -55,17 +55,29 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         }
 
         if (player.staffModLevel > 0 && cmd === 'ban') {
-            fs.appendFileSync('data/banlist.txt', args[0] + '\n');
-            if (World.getPlayerByUsername(args[0])) {
-                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
-                if (selplayer === undefined)
-                {
-                    player.messageGame('Error: Player is undefined!');
+            const banlist = fs.readFileSync('data/banlist.txt', 'ascii').replace(/\r/g, '').split('\n');
+
+            for (let i=0; i < banlist.length; i++) {
+                const line = banlist[i];
+                if (line.startsWith(args[0])) {
+                    player.messageGame('Player was already banned.');
+                    return false;
                 } else {
-                    World.removePlayer(selplayer);
+                    fs.appendFileSync('data/banlist.txt', args[0] + '\n');
+                    if (World.getPlayerByUsername(args[0])) {
+                        const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                        if (selplayer === undefined)
+                        {
+                            player.messageGame('Error: Player is undefined!');
+                        } else {
+                            World.removePlayer(selplayer);
+                        }
+                    }
+                    player.messageGame('Player: \'' + args[0] + '\' has been banned.');
+                    continue;
                 }
             }
-            player.messageGame('Player: \'' + args[0] + '\' has been banned.');
+
             return false;
         }
 
