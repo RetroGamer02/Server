@@ -1898,6 +1898,10 @@ export default class Player extends PathingEntity {
         this.writeHighPriority(ServerProt.MESSAGE_GAME, msg);
     }
 
+    messagePM(from: bigint, messageId: number, staffModLevel: number, msg: string) {
+        this.writeHighPriority(ServerProt.MESSAGE_PRIVATE, from, messageId, staffModLevel, msg);
+    }
+
     rebuildNormal(zoneX: number, zoneZ: number) {
         const out = Packet.alloc(2);
         out.p1(ServerProt.REBUILD_NORMAL.id);

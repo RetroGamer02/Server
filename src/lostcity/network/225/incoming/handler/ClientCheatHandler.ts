@@ -40,6 +40,53 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
+        //let messageId = 0;
+        //let globeMsgId = 0;
+
+        if (cmd === 'pm') {
+            const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+            if (selplayer === undefined)
+            {
+                player.messageGame('Error: Player is undefined!');
+            } else {
+                //selplayer?.messagePM(BigInt(player.pid), messageId, player.staffModLevel, args[1]);
+                selplayer?.messageGame(args[1]);
+                //messageId++;
+            }
+        }
+
+        if (cmd === 'g') {
+            for (const player of World.players) {
+                //player.messagePM(BigInt(0), globeMsgId, 0, args[0]);
+                player.messageGame(args[0]);
+            }
+            //globeMsgId++;
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'locate') {
+            if (World.getPlayerByUsername(args[0])) {
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    player.messageGame('Player is at: ' + selplayer.x + ', ' + selplayer.z);
+                }
+            }
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'tpto') {
+            if (World.getPlayerByUsername(args[0])) {
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    player.teleport(selplayer.x, selplayer.z, selplayer.level);
+                }
+            }
+        }
+
         if (player.staffModLevel > 0 && cmd === 'kick') {
             if (World.getPlayerByUsername(args[0])) {
                 const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
