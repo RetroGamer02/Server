@@ -52,8 +52,8 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         }*/
 
         if (cmd === 'g') {
-            for (const player of World.players) {
-                player.messagePM(BigInt(508660213), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
+            for (const selplayer of World.players) {
+                selplayer.messagePM(BigInt(508660213), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
             }
         }
 
