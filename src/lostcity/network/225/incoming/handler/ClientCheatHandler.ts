@@ -35,32 +35,26 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         const { input: cheat } = message;
 
         const args: string[] = cheat.toLowerCase().split(' ');
+        const argsns: string[] = cheat.toLowerCase();
         const cmd: string | undefined = args.shift();
         if (cmd === undefined || cmd.length <= 0) {
             return false;
         }
 
-        //let messageId = 0;
-        //let globeMsgId = 0;
-
-        if (cmd === 'pm') {
+        /*if (cmd === 'pm') {
             const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
             if (selplayer === undefined)
             {
                 player.messageGame('Error: Player is undefined!');
             } else {
-                //selplayer?.messagePM(BigInt(player.pid), messageId, player.staffModLevel, args[1]);
-                selplayer?.messageGame(args[1]);
-                //messageId++;
+                selplayer?.messagePM(player.username37, Math.floor(Math.random() * 2147483646), player.staffModLevel, args[1]);
             }
-        }
+        }*/
 
         if (cmd === 'g') {
             for (const player of World.players) {
-                //player.messagePM(BigInt(0), globeMsgId, 0, args[0]);
-                player.messageGame(player.displayName + ' says: ' + args[0]);
+                player.messagePM(BigInt(508660213), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
             }
-            //globeMsgId++;
         }
 
         if (player.staffModLevel > 0 && cmd === 'locate') {
