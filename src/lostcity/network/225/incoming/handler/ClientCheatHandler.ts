@@ -58,7 +58,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         if (cmd === 'g') {
             for (const player of World.players) {
                 //player.messagePM(BigInt(0), globeMsgId, 0, args[0]);
-                player.messageGame(args[0]);
+                player.messageGame(player.displayName + ' says: ' + args[0]);
             }
             //globeMsgId++;
         }
@@ -144,7 +144,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             return false;
         }
 
-        if (player.staffModLevel < 1) {
+        if (player.staffModLevel < 1 && cmd !== 'g') {
             player.playerLog('Cheat cmd attempted', cheat);
             player.messageGame('Cheat Commands are Disabled.');
             return false;
