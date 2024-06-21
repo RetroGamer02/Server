@@ -51,13 +51,14 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             }
         }*/
 
-        let onlineCtr = 1;
+        let onlineCtr = 0;
 
         if (cmd === 'online'){
             for (const selplayer of World.players) {
-                player.messageGame('There are ' + onlineCtr + ' players online.');
                 onlineCtr++;
             }
+            player.messageGame('There are ' + onlineCtr + ' players online.');
+            onlineCtr = 0;
         }
 
         if (cmd === 'g') {
