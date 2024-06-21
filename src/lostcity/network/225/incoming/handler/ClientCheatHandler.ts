@@ -35,7 +35,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         const { input: cheat } = message;
 
         const args: string[] = cheat.toLowerCase().split(' ');
-        const argsns: string[] = cheat.toLowerCase();
+        const argsns: string[] = cheat;
         const cmd: string | undefined = args.shift();
         if (cmd === undefined || cmd.length <= 0) {
             return false;
@@ -50,6 +50,15 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
                 selplayer?.messagePM(player.username37, Math.floor(Math.random() * 2147483646), player.staffModLevel, args[1]);
             }
         }*/
+
+        let onlineCtr = 1;
+
+        if (cmd === 'online'){
+            for (const selplayer of World.players) {
+                player.messageGame('There are ' + onlineCtr + ' players online.');
+                onlineCtr++;
+            }
+        }
 
         if (cmd === 'g') {
             for (const selplayer of World.players) {
