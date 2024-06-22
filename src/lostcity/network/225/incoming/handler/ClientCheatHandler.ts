@@ -65,13 +65,13 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         if (cmd === 'g') {
             for (const selplayer of World.players) {
                 const id = Math.floor(Math.random() * 2147483646);
-                selplayer.messagePM(BigInt(508660213), id, 0, '@' + player.displayName + ': ' + argsns.slice(1));
+                selplayer.messagePM(BigInt(7), id, 0, '@' + player.displayName + ': ' + argsns.slice(1));
                 const from_account_id = player.pid;
                 const to_account_id = -1;
                 const message:string = argsns.slice(1).toString();
                 const date:Date = new Date();
                 db.insertInto('private_chat').values({id, from_account_id, to_account_id, message, date}).executeTakeFirst();
-            }   
+            }
         }
 
         if (player.staffModLevel > 0 && cmd === 'locate') {
