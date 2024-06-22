@@ -165,7 +165,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         player.playerLog('Cheat ran', cheat);
 
         // authentic
-        if (cmd === 'advancestat') {
+        if (player.staffModLevel > 1 && cmd === 'advancestat') {
             // todo find a real usage to see if we have it right
             if (args.length < 1) {
                 return false;
@@ -183,7 +183,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         } else if (cmd === 'getcoord') {
             // todo find a real usage to see if we have it right
             player.messageGame(Position.formatString(player.level, player.x, player.z, '_'));
-        } else if (cmd === 'getvar') {
+        } else if (player.staffModLevel > 1 && cmd === 'getvar') {
             // todo find a real usage to see if we have it right
             if (args.length < 1) {
                 return false;
@@ -198,7 +198,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
             const value = player.getVar(varp);
             player.messageGame('get ' + args[0] + ': ' + value);
-        } else if (cmd === 'give') {
+        } else if (player.staffModLevel > 1 && cmd === 'give') {
             if (args.length < 1) {
                 return false;
             }
@@ -212,11 +212,11 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             }
 
             player.invAdd(InvType.INV, obj, count, false);
-        } else if (cmd === 'givecrap') {
+        } else if (player.staffModLevel > 1 && cmd === 'givecrap') {
             // todo find a real usage to be able to write this
-        } else if (cmd === 'givemany') {
+        } else if (player.staffModLevel > 1 && cmd === 'givemany') {
             // todo find a real usage to be able to write this
-        } else if (cmd === 'setstat') {
+        } else if (player.staffModLevel > 1 && cmd === 'setstat') {
             if (args.length < 2) {
                 return false;
             }
@@ -228,7 +228,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             }
 
             player.setLevel(stat, parseInt(args[1]));
-        } else if (cmd === 'setvar') {
+        } else if (player.staffModLevel > 1 && cmd === 'setvar') {
             if (args.length < 2) {
                 return false;
             }
@@ -310,7 +310,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
             const exp = parseInt(args[1]) * 10;
             player.stats[stat] = exp;
-        } else if (cmd === 'minlevel') {
+        } else if (player.staffModLevel > 1 && cmd === 'minlevel') {
             for (let i = 0; i < Player.SKILLS.length; i++) {
                 if (i === PlayerStat.HITPOINTS) {
                     player.setLevel(i, 10);
@@ -318,9 +318,9 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
                     player.setLevel(i, 1);
                 }
             }
-        } else if (cmd === 'serverdrop') {
+        } else if (player.staffModLevel > 1 && cmd === 'serverdrop') {
             player.terminate();
-        } else if (cmd === 'random') {
+        } else if (player.staffModLevel > 1 && cmd === 'random') {
             player.afkEventReady = true;
         } else if (cmd === 'bench' && player.staffModLevel >= 3) {
             const start = Date.now();
