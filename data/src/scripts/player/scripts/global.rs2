@@ -8,6 +8,8 @@ mes("Welcome to RuneScape.");
 
 //Added by Retro
 mes("The server is currently in the Alpha phase.");
+mes("Character progression will not reset.");
+mes("To use Global chat enter ::g Message.");
 
 cam_reset;
 //if_close; // come back to this if this proves to be problematic, commented so welcome screen is visible
