@@ -25,7 +25,8 @@ import PlayerStat from '#lostcity/entity/PlayerStat.js';
 import MoveStrategy from '#lostcity/entity/MoveStrategy.js';
 
 import fs from 'fs';
-import { db } from '#lostcity/db/query.js';
+//import { db } from '#lostcity/db/query.js';
+//import { PlayerList } from '#lostcity/entity/EntityList.js';
 
 export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
     handle(message: ClientCheat, player: Player): boolean {
@@ -48,23 +49,23 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             {
                 player.messageGame('Error: Player is undefined!');
             } else {
-                selplayer?.messagePM(player.username37, Math.floor(Math.random() * 2147483646), player.staffModLevel, args[1]);
+                selplayer?.messagePrivate(player.username37, Math.floor(Math.random() * 2147483646), player.staffModLevel, args[1]);
             }
         }*/
 
         let onlineCtr = 0;
 
         if (cmd === 'online'){
+            onlineCtr = 0;
             for (const selplayer of World.players) {
                 onlineCtr++;
             }
             player.messageGame('There are ' + onlineCtr + ' players online.');
-            onlineCtr = 0;
         }
 
         if (cmd === 'g') {
             for (const selplayer of World.players) {
-                selplayer.messagePM(BigInt(7), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
+                selplayer.messagePrivate(BigInt(7), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
                 
             }
             const id = Math.floor(Math.random() * 2147483646);
@@ -72,7 +73,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             const to_account_id = -1;
             const message:string = argsns.slice(1).toString();
             const date:Date = new Date();
-            db.insertInto('private_chat').values({id, from_account_id, to_account_id, message, date}).executeTakeFirst();
+            //db.insertInto('private_chat').values({id, from_account_id, to_account_id, message, date}).executeTakeFirst();
         }
 
         if (player.staffModLevel > 0 && cmd === 'locate') {
