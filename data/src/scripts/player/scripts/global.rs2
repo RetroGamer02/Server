@@ -1,5 +1,5 @@
 [login,_]
-mes("Welcome to 04Scaper (v1.0.8).");
+mes("Welcome to 04Scaper (v1.0.8.1).");
 //if (map_localdev = false) {
 //    mes("The server is currently in the Alpha testing phase.");
 //    mes("Character progression will reset when Beta testing begins.");
