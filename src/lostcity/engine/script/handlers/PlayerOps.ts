@@ -132,22 +132,6 @@ const PlayerOps: CommandHandlers = {
         state.activePlayer.enqueueScript(script, PlayerQueueType.NORMAL, delay, args);
     }),
 
-    [ScriptOpcode.QUEUE2]: checkedHandler(ScriptPointer.ActivePlayer2, state => {
-        if (!state._activePlayer2) {
-            return;
-        }
-
-        const args = popScriptArgs(state);
-        const delay = check(state.popInt(), NumberNotNull);
-        const scriptId = state.popInt();
-
-        const script = ScriptProvider.get(scriptId);
-        if (!script) {
-            throw new Error(`Unable to find queue script: ${scriptId}`);
-        }
-        state._activePlayer2.enqueueScript(script, PlayerQueueType.NORMAL, delay, args);
-    }),
-
     [ScriptOpcode.ANIM]: checkedHandler(ActivePlayer, state => {
         const delay = check(state.popInt(), NumberNotNull);
         const seq = state.popInt();
@@ -211,7 +195,34 @@ const PlayerOps: CommandHandlers = {
     },
 
     [ScriptOpcode.LAST_INT]: state => {
-        state.pushInt(state.activePlayer.lastInt);
+        const aiTriggers = [
+            ServerTriggerType.AI_QUEUE1,
+            ServerTriggerType.AI_QUEUE2,
+            ServerTriggerType.AI_QUEUE3,
+            ServerTriggerType.AI_QUEUE4,
+            ServerTriggerType.AI_QUEUE5,
+            ServerTriggerType.AI_QUEUE6,
+            ServerTriggerType.AI_QUEUE7,
+            ServerTriggerType.AI_QUEUE8,
+            ServerTriggerType.AI_QUEUE9,
+            ServerTriggerType.AI_QUEUE10,
+            ServerTriggerType.AI_QUEUE11,
+            ServerTriggerType.AI_QUEUE12,
+            ServerTriggerType.AI_QUEUE13,
+            ServerTriggerType.AI_QUEUE14,
+            ServerTriggerType.AI_QUEUE15,
+            ServerTriggerType.AI_QUEUE16,
+            ServerTriggerType.AI_QUEUE17,
+            ServerTriggerType.AI_QUEUE18,
+            ServerTriggerType.AI_QUEUE19,
+            ServerTriggerType.AI_QUEUE20
+        ];
+
+        if (aiTriggers.includes(state.trigger)) {
+            state.pushInt(state.activeNpc.lastInt);
+        } else {
+            state.pushInt(state.activePlayer.lastInt);
+        }
     },
 
     [ScriptOpcode.LAST_ITEM]: state => {
@@ -692,22 +703,6 @@ const PlayerOps: CommandHandlers = {
         state.activePlayer.setTimer(PlayerTimerType.NORMAL, script, args, interval);
     }),
 
-    [ScriptOpcode.SETTIMER2]: checkedHandler(ScriptPointer.ActivePlayer2, state => {
-        if (!state._activePlayer2) {
-            return;
-        }
-
-        const args = popScriptArgs(state);
-        const interval = state.popInt();
-        const timerId = state.popInt();
-
-        const script = ScriptProvider.get(timerId);
-        if (!script) {
-            throw new Error(`Unable to find timer script: ${timerId}`);
-        }
-        state._activePlayer2.setTimer(PlayerTimerType.NORMAL, script, args, interval);
-    }),
-
     [ScriptOpcode.CLEARTIMER]: checkedHandler(ActivePlayer, state => {
         state.activePlayer.clearTimer(state.popInt());
     }),
@@ -877,14 +872,6 @@ const PlayerOps: CommandHandlers = {
 
     [ScriptOpcode.WALKTRIGGER]: state => {
         state.activePlayer.walktrigger = state.popInt();
-    },
-
-    [ScriptOpcode.WALKTRIGGER2]: state => {
-        if (!state._activePlayer2) {
-            return;
-        }
-
-        state._activePlayer2.walktrigger = state.popInt();
     },
 
     [ScriptOpcode.GETWALKTRIGGER]: state => {
