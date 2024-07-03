@@ -57,6 +57,8 @@ export class NetworkPlayer extends Player {
         this.userPath = [];
         this.opcalled = false;
 
+        World.lastCycleBandwidth[0] += this.client.inOffset;
+
         while (this.client.inOffset > offset) {
             const packetType = ClientProt.byId[this.client.in[offset++]];
             let length = packetType.length;
@@ -136,7 +138,7 @@ export class NetworkPlayer extends Player {
         const prot: ServerProt = encoder.prot;
         let buf: Packet;
         if (prot.length === -1) {
-            buf = Packet.alloc(0);
+            buf = Packet.alloc(1);
         } else if (prot.length === -2) {
             buf = Packet.alloc(2); // maybe this can be a type 1.
         } else {
@@ -196,6 +198,9 @@ export class NetworkPlayer extends Player {
     }
 
     updateMap() {
+        const loadedZones: Set<number> = this.buildArea.loadedZones;
+        const activeZones: Set<number> = this.buildArea.activeZones;
+
         const reloadLeftX = (Position.zone(this.originX) - 4) << 3;
         const reloadRightX = (Position.zone(this.originX) + 5) << 3;
         const reloadTopZ = (Position.zone(this.originZ) + 5) << 3;
@@ -207,7 +212,7 @@ export class NetworkPlayer extends Player {
 
             this.originX = this.x;
             this.originZ = this.z;
-            this.loadedZones.clear();
+            loadedZones.clear();
         }
 
         for (let info = this.cameraPackets.head(); info !== null; info = this.cameraPackets.next()) {
@@ -222,11 +227,11 @@ export class NetworkPlayer extends Player {
         }
 
         if (this.moveSpeed === MoveSpeed.INSTANT && this.jump) {
-            this.loadedZones.clear();
+            loadedZones.clear();
         }
 
         // update any newly tracked zones
-        this.activeZones.clear();
+        activeZones.clear();
 
         const centerX = Position.zone(this.x);
         const centerZ = Position.zone(this.z);
@@ -243,29 +248,31 @@ export class NetworkPlayer extends Player {
                     continue;
                 }
 
-                this.activeZones.add(ZoneMap.zoneIndex(x << 3, z << 3, this.level));
+                activeZones.add(ZoneMap.zoneIndex(x << 3, z << 3, this.level));
             }
         }
     }
 
     updateZones() {
+        const loadedZones: Set<number> = this.buildArea.loadedZones;
+        const activeZones: Set<number> = this.buildArea.activeZones;
         // unload any zones that are no longer active
-        for (const zoneIndex of this.loadedZones) {
-            if (!this.activeZones.has(zoneIndex)) {
-                this.loadedZones.delete(zoneIndex);
+        for (const zoneIndex of loadedZones) {
+            if (!activeZones.has(zoneIndex)) {
+                loadedZones.delete(zoneIndex);
             }
         }
 
         // update active zones
-        for (const zoneIndex of this.activeZones) {
+        for (const zoneIndex of activeZones) {
             const zone: Zone = World.getZoneIndex(zoneIndex);
-            if (!this.loadedZones.has(zone.index)) {
+            if (!loadedZones.has(zone.index)) {
                 zone.writeFullFollows(this);
             } else {
                 zone.writePartialEncloses(this);
                 zone.writePartialFollows(this);
             }
-            this.loadedZones.add(zone.index);
+            loadedZones.add(zone.index);
         }
     }
 

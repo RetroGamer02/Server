@@ -65,6 +65,7 @@ import MessagePrivate from '#lostcity/network/outgoing/model/MessagePrivate.js';
 import ServerProtPriority from '#lostcity/network/outgoing/prot/ServerProtPriority.js';
 import { ParamHelper } from '#lostcity/cache/config/ParamHelper.js';
 import ParamType from '#lostcity/cache/config/ParamType.js';
+import BuildArea from '#lostcity/entity/BuildArea.js';
 
 const levelExperience = new Int32Array(99);
 
@@ -241,8 +242,7 @@ export default class Player extends PathingEntity {
     lastLevels: Uint8Array = new Uint8Array(21); // we track this so we know to flush stats only once a tick on changes
     originX: number = -1;
     originZ: number = -1;
-    npcs: Set<number> = new Set(); // observed npcs
-    otherPlayers: Set<number> = new Set(); // observed players
+    buildArea: BuildArea = new BuildArea();
     lastMovement: number = 0; // for p_arrivedelay
     basReadyAnim: number = -1;
     basTurnOnSpot: number = -1;
@@ -313,10 +313,6 @@ export default class Player extends PathingEntity {
 
     afkZones: Int32Array = new Int32Array(2);
     lastAfkZone: number = 0;
-
-    // build area
-    loadedZones: Set<number> = new Set();
-    activeZones: Set<number> = new Set();
 
     constructor(username: string, username37: bigint) {
         super(0, 3094, 3106, 1, 1, EntityLifeCycle.FOREVER, MoveRestrict.NORMAL, BlockWalk.NPC, MoveStrategy.SMART, Player.FACE_COORD, Player.FACE_ENTITY); // tutorial island.
@@ -1498,7 +1494,7 @@ export default class Player extends PathingEntity {
     }
 
     playAnimation(anim: number, delay: number) {
-        if (anim < 0 || anim >= SeqType.count) {
+        if (anim >= SeqType.count) {
             // client would hard crash
             return;
         }
