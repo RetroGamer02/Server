@@ -1,5 +1,5 @@
 viewerversion=100
-serverlist=http://04scaper.ca/serverlist.ws
+serverlist=https://04scaper.ca/serverlist.ws
 loader_jar=loader.jar
 window_preferredwidth=774
 window_preferredheight=552
@@ -28,12 +28,12 @@ msg=loading_app=Loading application
 msg=loading_app_resources=Loading application resources
 msg=message=Message
 msg=new_version=Launcher update available! Please visit the website to download the latest version.
-msg=new_version_link=http://04scape.ca/downloads
+msg=new_version_link=https://04scape.ca/downloads
 msg=new_version_linktext=Open Homepage
 msg=tandc=This game is copyright (c) 1999 - 2004 Jagex Ltd.\Recreated and preserved in 2023 - 2024.
 [1.high]
 title=04Scaper - World 1 (Members)
-codebase=http://w1.04scaper.ca
+codebase=https://w1.04scaper.ca
 servername=World 1 (Members), High Detail
 param=nodeid=10
 param=portoff=0
@@ -41,7 +41,7 @@ param=free=0
 param=lowmem=0
 [1.low]
 title=04Scape - World 1 (Members)
-codebase=http://w1.04scaper.ca
+codebase=https://w1.04scaper.ca
 servername=World 1 (Members), Low Detail
 param=nodeid=10
 param=portoff=0
