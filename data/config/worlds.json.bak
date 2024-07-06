@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "region": "Local",
+        "address": "http://localhost:81",
+	"members": true,
+        "portOffset": 0
+    }
+]

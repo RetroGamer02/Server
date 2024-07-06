@@ -97,7 +97,6 @@ export class LoginServer {
                     }
 
                     const account = await db.selectFrom('account').where('username', '=', username).selectAll().executeTakeFirst();
-                    
                     if (!account || !(await bcrypt.compare(password.toLowerCase(), account.password))) {
                         // invalid credentials (bad user or bad pass)
                         const reply = new Packet(new Uint8Array(1));
