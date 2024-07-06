@@ -41,6 +41,7 @@ export default {
     BUILD_ON_STARTUP: tryParseBoolean(process.env.BUILD_ON_STARTUP, true),
     UPDATE_ON_STARTUP: tryParseBoolean(process.env.UPDATE_ON_STARTUP, true),
 
+    MODS: tryParseArray(process.env.MODS?.split(','), ['pazaz']),
     JMODS: tryParseArray(process.env.JMODS?.split(','), ['pazaz']),
     CLIENT_PATHFINDER: tryParseBoolean(process.env.CLIENT_PATHFINDER, true),
 };

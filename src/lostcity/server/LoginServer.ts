@@ -79,7 +79,25 @@ export class LoginServer {
                     }
 
                     const username = fromBase37(username37);
+
+                    //Ban list added by Retro
+                    const banlist = fs.readFileSync('data/banlist.txt', 'ascii').replace(/\r/g, '').split('\n');
+
+                    for (let i=0; i < banlist.length; i++) {
+                        const line = banlist[i];
+                        if (line.startsWith(username)) {
+                            const reply = new Packet(new Uint8Array(1));
+                            reply.p1(5); //Todo find correct reply code.
+                            await this.write(socket, reply.data);
+                            data.release();
+                            return;
+                        } else {
+                            continue;
+                        }
+                    }
+
                     const account = await db.selectFrom('account').where('username', '=', username).selectAll().executeTakeFirst();
+                    
                     if (!account || !(await bcrypt.compare(password.toLowerCase(), account.password))) {
                         // invalid credentials (bad user or bad pass)
                         const reply = new Packet(new Uint8Array(1));

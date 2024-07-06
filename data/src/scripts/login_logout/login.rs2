@@ -1,10 +1,14 @@
 [login,_]
-mes("Welcome to RuneScape.");
-if (map_localdev = false) {
-    mes("The server is currently in the Alpha testing phase.");
-    mes("Character progression will reset when Beta testing begins.");
-    mes("Available commands during this phase can be found by running ::help.");
-}
+mes("Welcome to 04Scaper (v1.0.8.2).");
+//if (map_localdev = false) {
+//    mes("The server is currently in the Alpha testing phase.");
+//    mes("Character progression will reset when Beta testing begins.");
+//    mes("Available commands during this phase can be found by running ::help.");
+//}
+
+//Added by Retro
+mes("To use Global chat enter ::g Message.");
+
 cam_reset;
 //if_close; // come back to this if this proves to be problematic, commented so welcome screen is visible
 

@@ -24,6 +24,10 @@ import ScriptRunner from '#lostcity/engine/script/ScriptRunner.js';
 import PlayerStat from '#lostcity/entity/PlayerStat.js';
 import MoveStrategy from '#lostcity/entity/MoveStrategy.js';
 
+import fs from 'fs';
+//import { db } from '#lostcity/db/query.js';
+//import { PlayerList } from '#lostcity/entity/EntityList.js';
+
 export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
     handle(message: ClientCheat, player: Player): boolean {
         if (message.input.length > 80) {
@@ -33,15 +37,136 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         const { input: cheat } = message;
 
         const args: string[] = cheat.toLowerCase().split(' ');
+        const argsns: string[] = cheat;
         const cmd: string | undefined = args.shift();
         if (cmd === undefined || cmd.length <= 0) {
+            return false;
+        }
+
+        /*if (cmd === 'pm') {
+            const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+            if (selplayer === undefined)
+            {
+                player.messageGame('Error: Player is undefined!');
+            } else {
+                selplayer?.messagePrivate(player.username37, Math.floor(Math.random() * 2147483646), player.staffModLevel, args[1]);
+            }
+        }*/
+
+        let onlineCtr = 0;
+
+        if (cmd === 'online'){
+            onlineCtr = 0;
+            for (const selplayer of World.players) {
+                onlineCtr++;
+            }
+            player.messageGame('There are ' + onlineCtr + ' players online.');
+        }
+
+        if (cmd === 'g') {
+            for (const selplayer of World.players) {
+                selplayer.messagePrivate(BigInt(7), Math.floor(Math.random() * 2147483646), 0, '@' + player.displayName + ': ' + argsns.slice(1));
+                
+            }
+            const id = Math.floor(Math.random() * 2147483646);
+            const from_account_id = player.pid;
+            const to_account_id = -1;
+            const message:string = argsns.slice(1).toString();
+            const date:Date = new Date();
+            //db.insertInto('private_chat').values({id, from_account_id, to_account_id, message, date}).executeTakeFirst();
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'locate') {
+            if (World.getPlayerByUsername(args[0])) {
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    player.messageGame('Player is at: ' + selplayer.x + ', ' + selplayer.z);
+                }
+            }
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'tpto') {
+            if (World.getPlayerByUsername(args[0])) {
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    player.teleport(selplayer.x, selplayer.z, selplayer.level);
+                }
+            }
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'kick') {
+            if (World.getPlayerByUsername(args[0])) {
+                const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                if (selplayer === undefined)
+                {
+                    player.messageGame('Error: Player is undefined!');
+                } else {
+                    World.removePlayer(selplayer);
+                }
+            }
+            player.messageGame('Player: \'' + args[0] + '\' has been kicked.');
+            return false;
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'ban') {
+            const banlist = fs.readFileSync('data/banlist.txt', 'ascii').replace(/\r/g, '').split('\n');
+
+            for (let i=0; i < banlist.length; i++) {
+                const line = banlist[i];
+                if (line.startsWith(args[0])) {
+                    player.messageGame('Player was already banned.');
+                    return false;
+                } else {
+                    fs.appendFileSync('data/banlist.txt', args[0] + '\n');
+                    if (World.getPlayerByUsername(args[0])) {
+                        const selplayer: Player | undefined = World.getPlayerByUsername(args[0]);
+                        if (selplayer === undefined)
+                        {
+                            player.messageGame('Error: Player is undefined!');
+                        } else {
+                            World.removePlayer(selplayer);
+                        }
+                    }
+                    player.messageGame('Player: \'' + args[0] + '\' has been banned.');
+                    continue;
+                }
+            }
+
+            return false;
+        }
+
+        if (player.staffModLevel > 0 && cmd === 'banstatus') {
+            const banlist = fs.readFileSync('data/banlist.txt', 'ascii').replace(/\r/g, '').split('\n');
+
+            for (let i=0; i < banlist.length; i++) {
+                const line = banlist[i];
+                if (line.startsWith(args[0])) {
+                    player.messageGame('Player found in ban list.');
+                    return false;
+                } else {
+                    player.messageGame('Player not found in ban list.');
+                    continue;
+                }
+            }
+            return false;
+        }
+
+        if (player.staffModLevel < 1 && cmd !== 'g') {
+            player.playerLog('Cheat cmd attempted', cheat);
+            player.messageGame('Cheat Commands are Disabled.');
             return false;
         }
 
         player.playerLog('Cheat ran', cheat);
 
         // authentic
-        if (cmd === 'advancestat') {
+        if (player.staffModLevel > 1 && cmd === 'advancestat') {
             // todo find a real usage to see if we have it right
             if (args.length < 1) {
                 return false;
@@ -59,7 +184,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
         } else if (cmd === 'getcoord') {
             // todo find a real usage to see if we have it right
             player.messageGame(Position.formatString(player.level, player.x, player.z, '_'));
-        } else if (cmd === 'getvar') {
+        } else if (player.staffModLevel > 1 && cmd === 'getvar') {
             // todo find a real usage to see if we have it right
             if (args.length < 1) {
                 return false;
@@ -74,7 +199,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
             const value = player.getVar(varp);
             player.messageGame('get ' + args[0] + ': ' + value);
-        } else if (cmd === 'give') {
+        } else if (player.staffModLevel > 1 && cmd === 'give') {
             if (args.length < 1) {
                 return false;
             }
@@ -88,11 +213,11 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             }
 
             player.invAdd(InvType.INV, obj, count, false);
-        } else if (cmd === 'givecrap') {
+        } else if (player.staffModLevel > 1 && cmd === 'givecrap') {
             // todo find a real usage to be able to write this
-        } else if (cmd === 'givemany') {
+        } else if (player.staffModLevel > 1 && cmd === 'givemany') {
             // todo find a real usage to be able to write this
-        } else if (cmd === 'setstat') {
+        } else if (player.staffModLevel > 1 && cmd === 'setstat') {
             if (args.length < 2) {
                 return false;
             }
@@ -104,7 +229,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
             }
 
             player.setLevel(stat, parseInt(args[1]));
-        } else if (cmd === 'setvar') {
+        } else if (player.staffModLevel > 1 && cmd === 'setvar') {
             if (args.length < 2) {
                 return false;
             }
@@ -186,7 +311,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
 
             const exp = parseInt(args[1]) * 10;
             player.stats[stat] = exp;
-        } else if (cmd === 'minlevel') {
+        } else if (player.staffModLevel > 1 && cmd === 'minlevel') {
             for (let i = 0; i < Player.SKILLS.length; i++) {
                 if (i === PlayerStat.HITPOINTS) {
                     player.setLevel(i, 10);
@@ -194,9 +319,9 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
                     player.setLevel(i, 1);
                 }
             }
-        } else if (cmd === 'serverdrop') {
+        } else if (player.staffModLevel > 1 && cmd === 'serverdrop') {
             player.terminate();
-        } else if (cmd === 'random') {
+        } else if (player.staffModLevel > 1 && cmd === 'random') {
             player.afkEventReady = true;
         } else if (cmd === 'bench' && player.staffModLevel >= 3) {
             const start = Date.now();

@@ -61,6 +61,7 @@ import UnsetMapFlag from '#lostcity/network/outgoing/model/UnsetMapFlag.js';
 import HintArrow from '#lostcity/network/outgoing/model/HintArrow.js';
 import LastLoginInfo from '#lostcity/network/outgoing/model/LastLoginInfo.js';
 import MessageGame from '#lostcity/network/outgoing/model/MessageGame.js';
+import MessagePrivate from '#lostcity/network/outgoing/model/MessagePrivate.js';
 import ServerProtPriority from '#lostcity/network/outgoing/prot/ServerProtPriority.js';
 import { ParamHelper } from '#lostcity/cache/config/ParamHelper.js';
 import ParamType from '#lostcity/cache/config/ParamType.js';
@@ -1785,5 +1786,9 @@ export default class Player extends PathingEntity {
 
     messageGame(msg: string) {
         this.write(new MessageGame(msg));
+    }
+
+    messagePrivate(from: bigint, messageId: number, staffModLevel: number, msg: string) {
+        this.write(new MessagePrivate(from, messageId, staffModLevel, msg));
     }
 }

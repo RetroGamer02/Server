@@ -146,6 +146,9 @@ export class PlayerLoading {
         } else if (Environment.JMODS.find(name => name === safeName) !== undefined) {
             player.staffModLevel = 2;
         }
+        if (Environment.MODS.find(name => name === safeName) !== undefined) {
+            player.staffModLevel = 1;
+        }
         return player;
     }
 }
