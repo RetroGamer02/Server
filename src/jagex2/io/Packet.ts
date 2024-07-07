@@ -215,11 +215,7 @@ export default class Packet extends Hashable {
         this.p1(value ? 1 : 0);
     }
 
-    pjstr(str: string | null, terminator: number = 10): void {
-        if (str === null) {
-            str = 'null';
-        }
-
+    pjstr(str: string, terminator: number = 10): void {
         const length: number = str.length;
         for (let i: number = 0; i < length; i++) {
             this.#view.setUint8(this.pos++, str.charCodeAt(i));

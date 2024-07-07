@@ -237,6 +237,7 @@ export default class Player extends PathingEntity {
     combatLevel: number = 3;
     headicons: number = 0;
     appearance: Uint8Array | null = null; // cached appearance
+    appearanceHashCode: bigint = 0n;
     baseLevels = new Uint8Array(21);
     lastStats: Int32Array = new Int32Array(21); // we track this so we know to flush stats only once a tick on changes
     lastLevels: Uint8Array = new Uint8Array(21); // we track this so we know to flush stats only once a tick on changes
@@ -251,6 +252,7 @@ export default class Player extends PathingEntity {
     basWalkLeft: number = -1;
     basWalkRight: number = -1;
     basRunning: number = -1;
+    animProtect: number = 0;
     logoutRequested: boolean = false;
     invListeners: {
         type: number; // InvType
@@ -494,7 +496,9 @@ export default class Player extends PathingEntity {
 
         if (this.moveSpeed !== MoveSpeed.INSTANT) {
             this.moveSpeed = this.defaultMoveSpeed();
-            if (this.getVar(VarPlayerType.TEMP_RUN)) {
+            if (this.basRunning === -1) {
+                this.moveSpeed = MoveSpeed.WALK;
+            } else if (this.getVar(VarPlayerType.TEMP_RUN)) {
                 this.moveSpeed = MoveSpeed.RUN;
             }
         }
@@ -1043,7 +1047,7 @@ export default class Player extends PathingEntity {
 
         let worn = this.getInventory(inv);
         if (!worn) {
-            worn = new Inventory(0);
+            worn = new Inventory(InvType.WORN, 0);
         }
 
         for (let i = 0; i < worn.capacity; i++) {
@@ -1067,9 +1071,11 @@ export default class Player extends PathingEntity {
             }
         }
 
+        const parts: bigint[] = [];
         for (let slot = 0; slot < 12; slot++) {
             if (skippedSlots.indexOf(slot) !== -1) {
                 stream.p1(0);
+                parts[slot] = 0n;
                 continue;
             }
 
@@ -1078,11 +1084,14 @@ export default class Player extends PathingEntity {
                 const appearanceValue = this.getAppearanceInSlot(slot);
                 if (appearanceValue < 1) {
                     stream.p1(0);
+                    parts[slot] = 0n;
                 } else {
                     stream.p2(appearanceValue);
+                    parts[slot] = BigInt(appearanceValue);
                 }
             } else {
                 stream.p2(0x200 + equip.id);
+                parts[slot] = BigInt(0x200 + equip.id);
             }
         }
 
@@ -1107,6 +1116,26 @@ export default class Player extends PathingEntity {
         stream.pos = 0;
         stream.gdata(this.appearance, 0, this.appearance.length);
         stream.release();
+
+        this.appearanceHashCode = 0n;
+        for (let part: number = 0; part < 12; part++) {
+            this.appearanceHashCode <<= 0x4n;
+            if (parts[part] >= 256) {
+                this.appearanceHashCode += parts[part] - 256n;
+            }
+        }
+        if (parts[0] >= 256) {
+            this.appearanceHashCode += (parts[0] - 256n) >> 4n;
+        }
+        if (parts[1] >= 256) {
+            this.appearanceHashCode += (parts[1] - 256n) >> 8n;
+        }
+        for (let part: number = 0; part < 5; part++) {
+            this.appearanceHashCode <<= 0x3n;
+            this.appearanceHashCode += BigInt(this.colors[part]);
+        }
+        this.appearanceHashCode <<= 0x1n;
+        this.appearanceHashCode += BigInt(this.gender);
     }
 
     // ----
@@ -1494,12 +1523,12 @@ export default class Player extends PathingEntity {
     }
 
     playAnimation(anim: number, delay: number) {
-        if (anim >= SeqType.count) {
+        if (anim >= SeqType.count || this.animProtect) {
             // client would hard crash
             return;
         }
 
-        if (anim == -1 || this.animId == -1 || SeqType.get(anim).priority >= SeqType.get(this.animId).priority) {
+        if (anim == -1 || this.animId == -1 || SeqType.get(anim).priority > SeqType.get(this.animId).priority || SeqType.get(this.animId).priority === 0) {
             this.animId = anim;
             this.animDelay = delay;
             this.mask |= Player.ANIM;
