@@ -82,8 +82,8 @@ class World {
     private static readonly PLAYER_SAVERATE: number = 1500;
 
     private static readonly SHUTDOWN_TICKS: number = 24000;
-    private static readonly TIMEOUT_IDLE_TICKS: number = 75;
-    private static readonly TIMEOUT_LOGOUT_TICKS: number = 100;
+    private static readonly TIMEOUT_IDLE_TICKS: number = 75 * 4;
+    private static readonly TIMEOUT_LOGOUT_TICKS: number = 100 * 3;
 
     readonly gameMap: GameMap;
     readonly zoneMap: ZoneMap;
