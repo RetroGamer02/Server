@@ -43,6 +43,11 @@ if ($event_coord = null) {
     return;
 }
 %macro_event = $event;
+say("<tostring($event)>");
+// 04scape change - prevent harmful random events
+switch_int ($event) {
+    case ^macro_event_swarm : return;
+}
 def_npc $event_npc = ~macro_event_npc($event);
 npc_add($event_coord, $event_npc, 1000);
 %macro_event_uid = npc_uid;
@@ -112,16 +117,17 @@ if (map_members = true) {
 // https://youtu.be/MS7ADB-hh18
 // doesnt if_close
 %macro_event = ^no_macro_event;
-npc_say("No one ignores me!");
+npc_say("How rude!");
 npc_anim(human_castteleport, 0);
 p_delay(1);
 npc_del;
 p_delay(0);
 // https://youtu.be/g5k3XuXxyYQ?list=PLn23LiLYLb1Y3P9S9qZbijcJihiD416jT&t=37
-spotanim_map(small_smokepuff, coord, 124, 0);
-sound_synth(smokepuff2, 0, 0);
+// spotanim_map(small_smokepuff, coord, 124, 0);
+// sound_synth(smokepuff2, 0, 0);
 //--
-~p_telejump_safe($teleport_coord); // TODO: Confirm this
+// 04scape change - prevent harmful random events
+// ~p_telejump_safe($teleport_coord); // TODO: Confirm this
 
 
 [proc,macro_event_fail_scatter_inv]
@@ -129,20 +135,21 @@ if (p_finduid(uid) = false) {
     return;
 }
 %macro_event = ^no_macro_event;
-npc_say("No one ignores me!");
+npc_say("How rude!");
 npc_anim(human_castteleport, 0);
 p_delay(1);
 npc_del;
 p_delay(0);
-def_int $i = 0;
-while ($i < inv_size(inv)) {
-    def_coord $coord = ~coord_lineofwalk_radius(coord, 5); // 11x11 for now. todo: confirm how scattering works
-    if (inv_getobj(inv, $i) ! null) {
-        inv_dropslot(inv, $coord, $i, 200);
-    }
-    spotanim_map(small_smokepuff, $coord, 124, 0);
-    $i = calc($i + 1);
-}
+// 04scape change - prevent harmful random events
+// def_int $i = 0;
+// while ($i < inv_size(inv)) {
+//     def_coord $coord = ~coord_lineofwalk_radius(coord, 5); // 11x11 for now. todo: confirm how scattering works
+//     if (inv_getobj(inv, $i) ! null) {
+//         inv_dropslot(inv, $coord, $i, 200);
+//     }
+//     spotanim_map(small_smokepuff, $coord, 124, 0);
+//     $i = calc($i + 1);
+// }
 
 // not sure if this is a thing but people seem to remember it being a thing
 [proc,macro_event_fail_note_inv]

@@ -27,10 +27,14 @@ if (finduid(%npc_attacking_uid) = true) {
         sound_synth(dwarf_whistle, 0, 0);
         npc_say("I hates yoo <displayname>!");
     } else if (last_int = 4) { // fail
+        // 04scape change - prevent harmful random events
+        npc_say("How rude!");
+        npc_anim(human_castteleport, 0);
+        npc_del;
         // todo: figure out the message that goes here
-        %aggressive_npc = npc_uid; // interupt the player if they're in combat https://youtu.be/tw66JWQzpD0?t=32
-        %macro_event = ^no_macro_event;
-        npc_setmode(opplayer2);
+        // %aggressive_npc = npc_uid; // interupt the player if they're in combat https://youtu.be/tw66JWQzpD0?t=32
+        // %macro_event = ^no_macro_event;
+        // npc_setmode(opplayer2);
         return;
     }
     npc_queue(4, add(last_int, 1), 10);

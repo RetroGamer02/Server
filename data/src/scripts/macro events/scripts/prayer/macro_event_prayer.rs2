@@ -1,6 +1,7 @@
 [label,macro_event_prayer]
 switch_int (random(calc(~macro_event_general_count + 2))) {
-    case 0: ~macro_event_zombie_spawn;
-    case 1: ~macro_event_shade_spawn;
+    // 04scape change - prevent harmful random events
+    // case 0: ~macro_event_zombie_spawn;
+    // case 1: ~macro_event_shade_spawn;
     case default: ~macro_event_general_spawn(~macro_event_set_random);
 }
