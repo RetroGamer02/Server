@@ -43,7 +43,6 @@ if ($event_coord = null) {
     return;
 }
 %macro_event = $event;
-say("<tostring($event)>");
 // 04scape change - prevent harmful random events
 switch_int ($event) {
     case ^macro_event_swarm : return;
