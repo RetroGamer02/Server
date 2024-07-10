@@ -885,7 +885,7 @@ export default class Player extends PathingEntity {
                 this.unsetMapFlag();
             }
         } else if (this.target instanceof PathingEntity && this.inOperableDistance(this.target)) {
-            if (Environment.LOCAL_DEV && !opTrigger && !apTrigger) {
+            if (Environment.NODE_DEBUG && !opTrigger && !apTrigger) {
                 let debugname = '_';
                 if (this.target instanceof Npc) {
                     if (this.targetSubject.com !== -1 && this.targetOp === ServerTriggerType.APNPCT || this.targetOp === ServerTriggerType.OPNPCT) {
@@ -956,7 +956,7 @@ export default class Player extends PathingEntity {
                     this.unsetMapFlag();
                 }
             } else if ((this.target instanceof PathingEntity || !moved) && this.inOperableDistance(this.target)) {
-                if (Environment.LOCAL_DEV && !opTrigger && !apTrigger) {
+                if (!Environment.NODE_PRODUCTION && !opTrigger && !apTrigger) {
                     let debugname = '_';
                     if (this.target instanceof Npc) {
                         debugname = NpcType.get(this.target.type)?.debugname ?? this.target.type.toString();
@@ -1136,6 +1136,10 @@ export default class Player extends PathingEntity {
         }
         this.appearanceHashCode <<= 0x1n;
         this.appearanceHashCode += BigInt(this.gender);
+        this.appearanceHashCode <<= 0x1n;
+        this.appearanceHashCode += BigInt(this.headicons);
+        this.appearanceHashCode <<= 0x1n;
+        this.appearanceHashCode += BigInt(this.combatLevel);
     }
 
     // ----
@@ -1476,7 +1480,7 @@ export default class Player extends PathingEntity {
             return;
         }
 
-        const multi = Number(Environment.XP_MULTIPLIER) || 1;
+        const multi = Number(Environment.NODE_XPRATE) || 1;
         this.stats[stat] += xp * multi;
 
         // cap to 200m, this is represented as "2 billion" because we use 32-bit signed integers and divide by 10 to give us a decimal point
