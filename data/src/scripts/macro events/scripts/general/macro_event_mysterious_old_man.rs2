@@ -30,8 +30,8 @@ if (finduid(%npc_attacking_uid) = true) {
         npc_say("It's really rude to ignore someone, <displayname>!");
     } else if (last_int = 3) { // fail
         // https://youtu.be/Ai89wqupYqA?t=45
-        ~macro_event_fail_teleport;
         // 04scape change - prevent harmful random events
+        //~macro_event_fail_teleport;
         // ~macro_event_fail_note_inv; // not sure if this existed but Sudden and a couple others remember it being a thing
         return;
     }
