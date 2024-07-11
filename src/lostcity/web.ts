@@ -79,7 +79,8 @@ const web = http.createServer(async (req, res) => {
         } else if (url.pathname === '/rs2.cgi') {
             // embedded from website.com/client.cgi
             const plugin = tryParseInt(url.searchParams.get('plugin'), 0);
-            const lowmem = tryParseInt(url.searchParams.get('lowmem'), 0);
+            const detail = url.searchParams.get('detail');
+            const lowmem = detail === 'low' ? 1 : 0;
 
             if (plugin === 1) {
                 // plugin 1 - transpiled webclient
