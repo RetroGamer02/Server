@@ -174,7 +174,7 @@ export default class ClientCheatHandler extends MessageHandler<ClientCheat> {
                     return false;
                 }
     
-                player.setVar(varp, value);
+                other.setVar(varp, value);
                 player.messageGame('set ' + args[1] + ': to ' + value + ' on ' + other.username);
             } else if (cmd === 'setvar') {
                 // authentic
