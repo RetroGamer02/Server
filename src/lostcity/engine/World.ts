@@ -1,7 +1,7 @@
 import {Worker} from 'worker_threads';
 import fs from 'fs';
 import Watcher from 'watcher';
-import {basename} from 'path';
+import path from 'path';
 import kleur from 'kleur';
 
 import Packet from '#jagex2/io/Packet.js';
@@ -61,8 +61,8 @@ import LinkList from '#jagex2/datastruct/LinkList.js';
 import {createWorker} from '#lostcity/util/WorkerFactory.js';
 import {LoginResponse} from '#lostcity/server/LoginServer.js';
 import ClientProt from '#lostcity/network/225/incoming/prot/ClientProt.js';
-import {makeCrcs} from '#lostcity/server/CrcTable.js';
-import {preloadClient} from '#lostcity/server/PreloadedPacks.js';
+import {makeCrcs, makeCrcsAsync} from '#lostcity/server/CrcTable.js';
+import {preloadClient, preloadClientAsync} from '#lostcity/server/PreloadedPacks.js';
 import {Position} from '#lostcity/entity/Position.js';
 import UpdateRebootTimer from '#lostcity/network/outgoing/model/UpdateRebootTimer.js';
 import ZoneGrid from '#lostcity/engine/zone/ZoneGrid.js';
@@ -123,8 +123,8 @@ class World {
         this.zoneMap = new ZoneMap();
         this.invs = new Set();
         this.newPlayers = new Set();
-        this.players = new PlayerList(World.PLAYERS);
-        this.npcs = new NpcList(World.NPCS);
+        this.players = new PlayerList(World.PLAYERS - 1);
+        this.npcs = new NpcList(World.NPCS - 1);
         this.zonesTracking = new Map();
         this.queue = new LinkList();
         this.lastCycleStats = new Array(12).fill(0);
@@ -134,6 +134,10 @@ class World {
     // ----
 
     shouldReload(type: string, client: boolean = false): boolean {
+        if (typeof self !== 'undefined') {
+            return true;
+        }
+
         const current = Math.max(getModified(`data/pack/server/${type}.dat`), client ? getModified('data/pack/client/config') : 0);
 
         if (!this.datLastModified.has(type)) {
@@ -284,6 +288,67 @@ class World {
         this.allLastModified = getLatestModified('data/pack', '.dat');
     }
 
+    async loadAsync(): Promise<void> {
+        console.time('Loading packs');
+        const count = (await Promise.all([
+            NpcType.loadAsync('data/pack'),
+            ObjType.loadAsync('data/pack'),
+            LocType.loadAsync('data/pack'),
+            FontType.loadAsync('data/pack'),
+            WordEnc.loadAsync('data/pack'),
+            VarPlayerType.loadAsync('data/pack'),
+            ParamType.loadAsync('data/pack'),
+            IdkType.loadAsync('data/pack'),
+            SeqFrame.loadAsync('data/pack'),
+            SeqType.loadAsync('data/pack'),
+            SpotanimType.loadAsync('data/pack'),
+            CategoryType.loadAsync('data/pack'),
+            EnumType.loadAsync('data/pack'),
+            StructType.loadAsync('data/pack'),
+            InvType.loadAsync('data/pack'),
+            MesanimType.loadAsync('data/pack'),
+            DbTableType.loadAsync('data/pack'),
+            DbRowType.loadAsync('data/pack'),
+            HuntType.loadAsync('data/pack'),
+            VarNpcType.loadAsync('data/pack'),
+            VarSharedType.loadAsync('data/pack'),
+            Component.loadAsync('data/pack'),
+            makeCrcsAsync(),
+            preloadClientAsync(),
+            ScriptProvider.loadAsync('data/pack'),
+        ])).at(-1);
+
+        this.invs.clear();
+        for (let i = 0; i < InvType.count; i++) {
+            const inv = InvType.get(i);
+
+            if (inv && inv.scope === InvType.SCOPE_SHARED) {
+                this.invs.add(Inventory.fromType(i));
+            }
+        }
+
+        if (this.vars.length !== VarSharedType.count) {
+            const old = this.vars;
+            this.vars = new Int32Array(VarSharedType.count);
+            for (let i = 0; i < VarSharedType.count && i < old.length; i++) {
+                this.vars[i] = old[i];
+            }
+
+            const oldString = this.varsString;
+            this.varsString = new Array(VarSharedType.count);
+            for (let i = 0; i < VarSharedType.count && i < old.length; i++) {
+                this.varsString[i] = oldString[i];
+            }
+        }
+
+        if (count === -1) {
+            this.broadcastMes('There was an issue while reloading scripts.');
+        } else {
+            this.broadcastMes(`Reloaded ${count} scripts.`);
+        }
+        console.timeEnd('Loading packs');
+    }
+
     broadcastMes(message: string): void {
         for (const player of this.players) {
             player.messageGame(message);
@@ -293,36 +358,48 @@ class World {
     async start(skipMaps = false, startCycle = true): Promise<void> {
         console.log('Starting world...');
 
-        FontType.load('data/pack');
-        WordEnc.load('data/pack');
+        if (typeof self === 'undefined') {
+            FontType.load('data/pack');
+            WordEnc.load('data/pack');
 
-        this.reload();
+            this.reload();
 
-        if (!skipMaps) {
-            this.gameMap.init(this.zoneMap);
+            if (!skipMaps) {
+                this.gameMap.init(this.zoneMap);
+            }
+        } else {
+            console.time('World ready');
+            await this.loadAsync();
+
+            if (!skipMaps) {
+                await this.gameMap.initAsync(this.zoneMap);
+            }
+            console.timeEnd('World ready');
         }
 
         Login.loginThread.postMessage({
             type: 'reset'
         });
 
-        if (!Environment.NODE_PRODUCTION) {
-            this.startDevWatcher();
+        if (typeof self === 'undefined') {
+            if (!Environment.NODE_PRODUCTION) {
+                this.startDevWatcher();
 
-            // console.time('checker');
-            // todo: this check takes me 300ms on startup! but it saves double building fresh setups
-            if (Environment.BUILD_STARTUP && (shouldBuildFileAny('data/pack/client', 'data/pack/client/lastbuild.pack') || shouldBuildFileAny('data/pack/server', 'data/pack/server/lastbuild.pack'))) {
-                this.devThread!.postMessage({
-                    type: 'pack'
-                });
+                // console.time('checker');
+                // todo: this check takes me 300ms on startup! but it saves double building fresh setups
+                if (Environment.BUILD_STARTUP && (shouldBuildFileAny('data/pack/client', 'data/pack/client/lastbuild.pack') || shouldBuildFileAny('data/pack/server', 'data/pack/server/lastbuild.pack'))) {
+                    this.devThread!.postMessage({
+                        type: 'pack'
+                    });
+                }
+                // console.timeEnd('checker');
             }
-            // console.timeEnd('checker');
-        }
 
-        if (Environment.WEB_PORT === 80) {
-            console.log(kleur.green().bold('World ready') + kleur.white().bold(': http://localhost'));
-        } else {
-            console.log(kleur.green().bold('World ready') + kleur.white().bold(': http://localhost:' + Environment.WEB_PORT));
+            if (Environment.WEB_PORT === 80) {
+                console.log(kleur.green().bold('World ready') + kleur.white().bold(': http://localhost'));
+            } else {
+                console.log(kleur.green().bold('World ready') + kleur.white().bold(': http://localhost:' + Environment.WEB_PORT));
+            }
         }
 
         if (startCycle) {
@@ -331,7 +408,7 @@ class World {
     }
 
     startDevWatcher(): void {
-        this.devThread = createWorker('./src/lostcity/server/DevThread.ts');
+        this.devThread = createWorker('./src/lostcity/server/DevThread.ts') as Worker;
 
         this.devThread.on('message', msg => {
             if (msg.type === 'done') {
@@ -380,12 +457,12 @@ class World {
                 return;
             }
 
-            console.log('dev:', basename(targetPath), 'was edited');
+            console.log('dev:', path.basename(targetPath), 'was edited');
             this.devRebuilding = true;
             this.broadcastMes('Rebuilding, please wait...');
 
             if (!this.devThread) {
-                this.devThread = createWorker('./src/lostcity/server/DevThread.ts');
+                this.devThread = createWorker('./src/lostcity/server/DevThread.ts') as Worker;
             }
 
             this.devThread.postMessage({
@@ -523,9 +600,11 @@ class World {
             setTimeout(this.cycle.bind(this), this.tickRate - this.cycleStats[WorldStat.CYCLE]);
         }
 
-        // console.log(`tick ${this.currentTick} took ${this.cycleStats[WorldStat.CYCLE]}ms: ${this.getTotalPlayers()} players`);
-        // console.log(`${this.cycleStats[WorldStat.WORLD]} ms world | ${this.cycleStats[WorldStat.CLIENT_IN]} ms client in | ${this.cycleStats[WorldStat.NPC]} ms npcs | ${this.cycleStats[WorldStat.PLAYER]} ms players | ${this.cycleStats[WorldStat.LOGOUT]} ms logout | ${this.cycleStats[WorldStat.LOGIN]} ms login | ${this.cycleStats[WorldStat.ZONE]} ms zones | ${this.cycleStats[WorldStat.CLIENT_OUT]} ms client out | ${this.cycleStats[WorldStat.CLEANUP]} ms cleanup`);
-        // console.log('----');
+        if (Environment.NODE_DEBUG_PROFILE) {
+            console.log(`tick ${this.currentTick} took ${this.cycleStats[WorldStat.CYCLE]}ms: ${this.getTotalPlayers()} players`);
+            console.log(`${this.cycleStats[WorldStat.WORLD]} ms world | ${this.cycleStats[WorldStat.CLIENT_IN]} ms client in | ${this.cycleStats[WorldStat.NPC]} ms npcs | ${this.cycleStats[WorldStat.PLAYER]} ms players | ${this.cycleStats[WorldStat.LOGOUT]} ms logout | ${this.cycleStats[WorldStat.LOGIN]} ms login | ${this.cycleStats[WorldStat.ZONE]} ms zones | ${this.cycleStats[WorldStat.CLIENT_OUT]} ms client out | ${this.cycleStats[WorldStat.CLEANUP]} ms cleanup`);
+            console.log('----');
+        }
     }
 
     // - world queue
@@ -680,7 +759,7 @@ class World {
                 }
 
                 // - resume suspended script
-                if (npc.activeScript) {
+                if (npc.activeScript && npc.activeScript.execution === ScriptState.NPC_SUSPENDED) {
                     npc.executeScript(npc.activeScript);
                 }
 
@@ -727,8 +806,8 @@ class World {
                 }
 
                 // - resume suspended script
-                if (player.activeScript && !player.delayed() && player.activeScript.execution === ScriptState.SUSPENDED) {
-                    player.executeScript(player.activeScript, true);
+                if (player.activeScript && player.activeScript.execution === ScriptState.SUSPENDED && !player.delayed()) {
+                    player.executeScript(player.activeScript, true, true);
                 }
 
                 // - primary queue
@@ -816,27 +895,27 @@ class World {
     private async processLogins(): Promise<void> {
         const start: number = Date.now();
         player: for (const player of this.newPlayers) {
-            if (!isNetworkPlayer(player)) {
-                continue;
-            }
-
             for (const other of this.players) {
                 if (player.username !== other.username) {
                     continue;
                 }
-                player.client?.send(LoginResponse.LOGGED_IN);
-                player.client?.close();
+                if (isNetworkPlayer(player) && player.client) {
+                    player.client.send(LoginResponse.LOGGED_IN);
+                    player.client.close();
+                }
                 continue player;
             }
 
             let pid: number;
             try {
                 // if it throws then there was no available pid. otherwise guaranteed to not be -1.
-                pid = this.getNextPid(player.client);
+                pid = this.getNextPid(isNetworkPlayer(player) ? player.client : null);
             } catch (e) {
                 // world full
-                player.client?.send(LoginResponse.WORLD_FULL);
-                player.client?.close();
+                if (isNetworkPlayer(player)) {
+                    player.client?.send(LoginResponse.WORLD_FULL);
+                    player.client?.close();
+                }
                 continue;
             }
 
@@ -853,7 +932,7 @@ class World {
                 player.write(new UpdateRebootTimer(this.shutdownTick - this.currentTick));
             }
 
-            if (player.client) {
+            if (isNetworkPlayer(player) && player.client) {
                 player.client.state = 1;
                 if (player.staffModLevel >= 2) {
                     player.client.send(LoginResponse.STAFF_MOD_LEVEL);
@@ -913,6 +992,8 @@ class World {
 
         for (const player of this.players) {
             if (!isNetworkPlayer(player)) {
+                player.highPriorityOut.clear();
+                player.lowPriorityOut.clear();
                 continue;
             }
 
@@ -1082,6 +1163,11 @@ class World {
     }
 
     private savePlayers(): void {
+        // would cause excessive save dialogs on webworker
+        if (typeof self !== 'undefined') {
+            return;
+        }
+
         for (const player of this.players) {
             player.save().release();
         }

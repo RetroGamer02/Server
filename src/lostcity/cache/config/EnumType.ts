@@ -10,15 +10,30 @@ export default class EnumType extends ConfigType {
     static configs: EnumType[] = [];
 
     static load(dir: string) {
-        EnumType.configNames = new Map();
-        EnumType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/enum.dat`)) {
             console.log('Warning: No enum.dat found.');
             return;
         }
 
         const dat = Packet.load(`${dir}/server/enum.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/enum.dat`);
+        if (!file.ok) {
+            console.log('Warning: No enum.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        EnumType.configNames = new Map();
+        EnumType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

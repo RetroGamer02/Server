@@ -9,16 +9,32 @@ export default class VarNpcType extends ConfigType {
     private static configNames = new Map<string, number>();
     private static configs: VarNpcType[] = [];
 
-    static load(dir: string) {
-        VarNpcType.configNames = new Map();
-        VarNpcType.configs = [];
 
+    static load(dir: string) {
         if (!fs.existsSync(`${dir}/server/varn.dat`)) {
             console.log('Warning: No varn.dat found.');
             return;
         }
 
         const dat = Packet.load(`${dir}/server/varn.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/varn.dat`);
+        if (!file.ok) {
+            console.log('Warning: No varn.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        VarNpcType.configNames = new Map();
+        VarNpcType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

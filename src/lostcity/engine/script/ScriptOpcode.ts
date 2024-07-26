@@ -52,6 +52,7 @@ enum ScriptOpcode {
     MAP_LOCADDUNSAFE, // official
     MAP_MEMBERS, // official
     MAP_PLAYERCOUNT, // official, see giant dwarf cutscene
+    MAP_FINDSQUARE, // official
     MOVECOORD, // official
     PLAYERCOUNT,
     PROJANIM_MAP,
@@ -99,7 +100,7 @@ enum ScriptOpcode {
     FINDUID, // official
     GENDER,
     GETQUEUE, // official
-    GIVEXP,
+    STAT_ADVANCE,
     HEADICONS_GET,
     HEADICONS_SET,
     HEALENERGY, // official
@@ -193,6 +194,8 @@ enum ScriptOpcode {
     SETSKINCOLOUR,
     P_ANIMPROTECT,
     RUNENERGY,
+    WEIGHT,
+    LAST_COORD,
 
     // Npc ops (2500-2999)
     NPC_ADD = 2500, // official

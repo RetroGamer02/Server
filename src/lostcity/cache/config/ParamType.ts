@@ -10,15 +10,30 @@ export default class ParamType extends ConfigType {
     private static configs: ParamType[] = [];
 
     static load(dir: string) {
-        ParamType.configNames = new Map();
-        ParamType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/param.dat`)) {
             console.log('Warning: No param.dat found.');
             return;
         }
 
         const dat = Packet.load(`${dir}/server/param.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/param.dat`);
+        if (!file.ok) {
+            console.log('Warning: No param.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        ParamType.configNames = new Map();
+        ParamType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

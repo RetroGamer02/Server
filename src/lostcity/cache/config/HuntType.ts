@@ -16,15 +16,29 @@ export default class HuntType extends ConfigType {
     private static configs: HuntType[] = [];
 
     static load(dir: string) {
-        HuntType.configNames = new Map();
-        HuntType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/hunt.dat`)) {
             console.log('Warning: No hunt.dat found.');
             return;
         }
-
         const dat = Packet.load(`${dir}/server/hunt.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/hunt.dat`);
+        if (!file.ok) {
+            console.log('Warning: No hunt.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        HuntType.configNames = new Map();
+        HuntType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

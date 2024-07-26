@@ -43,6 +43,7 @@
 [command,zonecount]()(int)
 [command,loccount]()(int)
 [command,objcount]()(int)
+[command,map_findsquare](coord $coord, int $minradius, int $maxradius, int $type)(coord)
 
 // Player ops (2000-2499)
 [command,finduid](player_uid $player)(boolean)
@@ -144,7 +145,7 @@
 [command,if_setnpchead](component $component, npc $npc)
 [command,if_setposition](component $component, int $x, int $y);
 [command,if_multizone](boolean $multizone)
-[command,givexp](stat $stat, int $exp)
+[command,stat_advance](stat $stat, int $exp)
 [command,damage](player_uid $uid, int $type, int $amount)
 [command,.damage](player_uid $uid, int $type, int $amount)
 [command,if_setresumebuttons](component $component1, component $component2, component $component3, component $component4, component $component5)
@@ -228,6 +229,8 @@
 [command,p_animprotect](int $toggle)
 [command,.p_animprotect](int $toggle)
 [command,runenergy]()(int)
+[command,weight]()(int)
+[command,last_coord]()(coord)
 
 // Npc ops (2500-2999)
 [command,npc_finduid](npc_uid $uid)(boolean)

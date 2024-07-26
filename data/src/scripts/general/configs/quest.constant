@@ -26,7 +26,7 @@
 ^legends_complete = 0
 ^blackarmgang_complete = 4
 ^phoenixgang_complete = 10
-^elena_complete = 17
+^elena_complete = 29
 ^seaslug_complete = 12
 ^arthur_complete = 7
 ^tree_complete = 9
@@ -38,6 +38,7 @@
 ^hazeelcult_complete = 9
 ^itgronigen_complete = 7
 ^junglepotion_complete = 11
+^biohazard_complete = 16
 
 ^blackarmgang_questpoints = 1
 ^blackknight_questpoints = 3
@@ -75,3 +76,5 @@
 ^itgronigen_questpoints = 2
 ^arena_questpoints = 2
 ^junglepotion_questpoints = 1
+^ikov_questpoints = 1
+^biohazard_questpoints = 3

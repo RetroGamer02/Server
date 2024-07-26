@@ -10,15 +10,29 @@ export default class DbTableType extends ConfigType {
     private static configs: DbTableType[] = [];
 
     static load(dir: string) {
-        DbTableType.configNames = new Map();
-        DbTableType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/dbtable.dat`)) {
             console.log('Warning: No dbtable.dat found.');
             return;
         }
-
         const dat = Packet.load(`${dir}/server/dbtable.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/dbtable.dat`);
+        if (!file.ok) {
+            console.log('Warning: No dbtable.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        DbTableType.configNames = new Map();
+        DbTableType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

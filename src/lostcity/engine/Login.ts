@@ -1,4 +1,4 @@
-import { Worker } from 'worker_threads';
+import { Worker as NodeWorker } from 'worker_threads';
 
 import Isaac from '#jagex2/io/Isaac.js';
 import Packet from '#jagex2/io/Packet.js';
@@ -15,18 +15,28 @@ import { CrcBuffer32 } from '#lostcity/server/CrcTable.js';
 import Environment from '#lostcity/util/Environment.js';
 
 class Login {
-    loginThread: Worker = createWorker('./src/lostcity/server/LoginThread.ts');
+    loginThread: Worker | NodeWorker = createWorker(typeof self === 'undefined' ? './src/lostcity/server/LoginThread.ts' : 'LoginThread.js');
     loginRequests: Map<string, ClientSocket> = new Map();
     logoutRequests: Set<bigint> = new Set();
 
     constructor() {
-        this.loginThread.on('message', msg => {
-            try {
-                this.onMessage(msg);
-            } catch (err) {
-                console.error('Login Thread:', err);
+        try {
+            if (typeof self === 'undefined') {
+                if (this.loginThread instanceof NodeWorker) {
+                    this.loginThread.on('message', msg => {
+                        this.onMessage(msg);
+                    });
+                }
+            } else {
+                if (this.loginThread instanceof Worker) {
+                    this.loginThread.onmessage = msg => {
+                        this.onMessage(msg.data);
+                    };
+                }
             }
-        });
+        } catch (err) {
+            console.error('Login Thread:', err);
+        }
     }
 
     async readIn(socket: ClientSocket, data: Packet) {
@@ -47,6 +57,7 @@ class Login {
             const revision = data.g1();
             if (revision !== 225) {
                 socket.writeImmediate(LoginResponse.SERVER_UPDATED);
+                socket.close();
                 return;
             }
 
@@ -56,6 +67,7 @@ class Login {
             data.gdata(crcs, 0, crcs.length);
             if (!Packet.checkcrc(crcs, 0, crcs.length, CrcBuffer32)) {
                 socket.writeImmediate(LoginResponse.SERVER_UPDATED);
+                socket.close();
                 return;
             }
 

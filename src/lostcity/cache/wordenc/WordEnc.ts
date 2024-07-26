@@ -35,14 +35,28 @@ export default class WordEnc {
 
     private static whitelist = ['cook', "cook's", 'cooks', 'seeks', 'sheet'];
 
-    static load(dir: string): void {
+    static async load(dir: string): Promise<void> {
         if (!fs.existsSync(`${dir}/client/wordenc`)) {
             console.log('Warning: No wordenc found.');
             return;
         }
 
         const wordenc = Jagfile.load(`${dir}/client/wordenc`);
+        this.readAll(wordenc);
+    }
 
+    static async loadAsync(dir: string): Promise<void> {
+        const file = await fetch(`${dir}/client/wordenc`);
+        if (!file.ok) {
+            console.log('Warning: No wordenc.dat found.');
+            return;
+        }
+
+        const wordenc = new Jagfile(new Packet(new Uint8Array(await file.arrayBuffer())));
+        this.readAll(wordenc);
+    }
+
+    static readAll(wordenc: Jagfile): void {
         const fragmentsenc = wordenc.read('fragmentsenc.txt');
         if (!fragmentsenc) {
             console.log('Warning: No fragmentsenc found.');

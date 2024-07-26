@@ -10,15 +10,30 @@ export default class CategoryType extends ConfigType {
     private static configs: CategoryType[] = [];
 
     static load(dir: string) {
-        CategoryType.configNames = new Map();
-        CategoryType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/category.dat`)) {
             console.log('Warning: No category.dat found.');
             return;
         }
 
         const dat = Packet.load(`${dir}/server/category.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/category.dat`);
+        if (!file.ok) {
+            console.log('Warning: No category.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        CategoryType.configNames = new Map();
+        CategoryType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {

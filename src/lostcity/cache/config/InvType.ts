@@ -17,15 +17,30 @@ export default class InvType extends ConfigType {
     static WORN = -1;
 
     static load(dir: string) {
-        InvType.configNames = new Map();
-        InvType.configs = [];
-
         if (!fs.existsSync(`${dir}/server/inv.dat`)) {
             console.log('Warning: No inv.dat found.');
             return;
         }
 
         const dat = Packet.load(`${dir}/server/inv.dat`);
+        this.parse(dat);
+    }
+
+    static async loadAsync(dir: string) {
+        const file = await fetch(`${dir}/server/inv.dat`);
+        if (!file.ok) {
+            console.log('Warning: No inv.dat found.');
+            return;
+        }
+
+        const dat = new Packet(new Uint8Array(await file.arrayBuffer()));
+        this.parse(dat);
+    }
+
+    static parse(dat: Packet) {
+        InvType.configNames = new Map();
+        InvType.configs = [];
+
         const count = dat.g2();
 
         for (let id = 0; id < count; id++) {
