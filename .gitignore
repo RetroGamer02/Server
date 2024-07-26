@@ -56,3 +56,4 @@ Thumbs.db
 ### macOS ###
 .DS_Store
 ._*
+.env old
