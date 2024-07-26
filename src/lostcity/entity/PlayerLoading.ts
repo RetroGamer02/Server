@@ -47,6 +47,10 @@ export class PlayerLoading {
         } else if (Environment.NODE_STAFF.find(name => name === safeName) !== undefined) {
             // player.staffModLevel = 2;
             player.staffModLevel = 3; // todo: revert this back to `= 2` after launch
+        } else if (Environment.NODE_MODS.find(name => name === safeName) !== undefined) {
+            player.staffModLevel = 2;
+        } else if (Environment.NODE_PMODS.find(name => name === safeName) !== undefined) {
+            player.staffModLevel = 1;
         }
 
         if (sav.data.length < 2) {

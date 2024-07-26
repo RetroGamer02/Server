@@ -23,6 +23,7 @@ export default {
     NODE_DEBUG: tryParseBoolean(process.env.NODE_DEBUG, true),
     // measuring script execution
     NODE_DEBUG_PROFILE: tryParseBoolean(process.env.NODE_DEBUG_PROFILE, false),
+    NODE_PMODS: tryParseArray(process.env.NODE_PMODS?.split(','), ['pazaz']), // todo: add staffmodlevel to database
     NODE_MODS: tryParseArray(process.env.NODE_MODS?.split(','), ['pazaz']), // todo: add staffmodlevel to database
     // *only* if no login server is running to authenticate accounts, this provides admin accs by username :)
     NODE_STAFF: tryParseArray(process.env.NODE_STAFF?.split(','), ['pazaz']), // todo: add staffmodlevel to database
